@@ -10,10 +10,7 @@
     "vue": "npm:vue@latest",
     "vite": "npm:vite@latest",
     "@vitejs/plugin-vue": "npm:@vitejs/plugin-vue@latest",
-    "tailwindcss": "npm:tailwindcss@latest",
-    "@tailwindcss/vite": "npm:@tailwindcss/vite@latest",
-    "@tauri-apps/api": "npm:@tauri-apps/api@^2.0.0",
-    "sass": "npm:sass@^1.100.0",
-    "sass-embedded": "npm:sass-embedded@^1.100.0"
+    "sass": "npm:sass@latest",
+    "@tauri-apps/api": "npm:@tauri-apps/api@^2.0.0"
   }
 }

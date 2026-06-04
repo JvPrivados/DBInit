@@ -13,8 +13,8 @@
     "windows": [
       {
         "title": "DBInit",
-        "width": 500,
-        "height": 500,
+        "width": 640,
+        "height": 480,
         "resizable": false,
         "fullscreen": false,
         "maximizable": false,

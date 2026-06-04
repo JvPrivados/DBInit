@@ -15,5 +15,3 @@ document.addEventListener(
   <Titlebar />
   <AppContainer />
 </template>
-
-<style lang="scss" scoped></style>
