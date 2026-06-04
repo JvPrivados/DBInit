@@ -1,167 +1,36 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from "vue";
+import { onMounted } from "vue";
+import { useServices } from "../composables/useService.ts";
+import type { Service } from "../composables/types.ts";
+
 import PhpIcon from "../assets/Icons/PhpIcon.vue";
 import PostgresqlIcon from "../assets/Icons/PostgresqlIcon.vue";
 import MariadbIcon from "../assets/Icons/MariadbIcon.vue";
 
-interface Service {
-  id: string;
-  name: string;
-  category: "languages" | "databases";
-  port: number;
-  status: "stopped" | "running";
-  pid: number | null;
-}
+const {
+  services,
+  logs,
+  isLogsExpanded,
+  terminalContainer,
+  toggleService,
+  openConfig,
+  clearLogs,
+  toggleLogsPanel,
+  fetchServicesStatus,
+} = useServices();
 
-const services = ref<Service[]>([
-  {
-    id: "php",
-    name: "PHP",
-    category: "languages",
-    port: 8000,
-    status: "stopped",
-    pid: null,
-  },
-  {
-    id: "postgresql",
-    name: "PostgreSQL",
-    category: "databases",
-    port: 5432,
-    status: "stopped",
-    pid: null,
-  },
-  {
-    id: "mariadb",
-    name: "MariaDB",
-    category: "databases",
-    port: 3306,
-    status: "stopped",
-    pid: null,
-  },
-]);
-
-interface LogEntry {
-  timestamp: string;
-  service: string;
-  type: "info" | "success" | "error";
-  message: string;
-}
-
-const logs = ref<LogEntry[]>([]);
-const terminalContainer = ref<HTMLDivElement | null>(null);
-const isLogsExpanded = ref(false);
-
-const addLog = (
-  serviceName: string,
-  type: "info" | "success" | "error",
-  message: string,
-) => {
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString("pt-BR", { hour12: false });
-  logs.value.push({
-    timestamp: timeStr,
-    service: serviceName,
-    type,
-    message,
-  });
-
-  nextTick(() => {
-    if (terminalContainer.value) {
-      terminalContainer.value.scrollTop = terminalContainer.value.scrollHeight;
-    }
-  });
-};
-
-const toggleService = (service: Service) => {
-  if (service.status === "stopped") {
-    // Start service
-    if (!service.port || service.port < 1 || service.port > 65535) {
-      addLog(
-        service.name,
-        "error",
-        `Falha ao iniciar: Porta ${service.port} é inválida.`,
-      );
-      return;
-    }
-
-    // Check for port conflicts (mocking)
-    const duplicate = services.value.find(
-      (s) =>
-        s.id !== service.id &&
-        s.port === service.port &&
-        s.status === "running",
-    );
-    if (duplicate) {
-      addLog(
-        service.name,
-        "error",
-        `Falha ao iniciar: Porta ${service.port} já está em uso por ${duplicate.name}.`,
-      );
-      return;
-    }
-
-    service.status = "running";
-    service.pid = Math.floor(Math.random() * 9000) + 1000;
-    addLog(
-      service.name,
-      "info",
-      `Iniciando serviço na porta ${service.port}...`,
-    );
-    setTimeout(() => {
-      addLog(
-        service.name,
-        "success",
-        `Serviço iniciado com sucesso. PID: ${service.pid}`,
-      );
-    }, 400);
-  } else {
-    // Stop service
-    const oldPid = service.pid;
-    service.status = "stopped";
-    service.pid = null;
-    addLog(service.name, "info", `Parando serviço (PID: ${oldPid})...`);
-    setTimeout(() => {
-      addLog(service.name, "info", `Serviço parado.`);
-    }, 200);
-  }
-};
-
-const openConfig = (service: Service) => {
-  addLog(
-    service.name,
-    "info",
-    `Carregando configurações para ${service.name}...`,
-  );
-  setTimeout(() => {
-    addLog(
-      service.name,
-      "info",
-      `[Mock Config] Editor de arquivos temporariamente indisponível. Caminho do arquivo: config/${service.id}/${service.id}.conf`,
-    );
-  }, 300);
-};
-
-const clearLogs = () => {
-  logs.value = [];
-};
-
-const toggleLogsPanel = () => {
-  isLogsExpanded.value = !isLogsExpanded.value;
-};
+onMounted(() => {
+  fetchServicesStatus();
+});
 </script>
 
 <template>
-  <!-- Main with transparent background (relies on style.css body background) -->
   <main class="app-main">
-    <!-- Background Accents (Subtle glows for modern feel) -->
     <div class="bg-glow bg-glow--indigo"></div>
     <div class="bg-glow bg-glow--emerald"></div>
 
-    <!-- Main Content Container -->
     <div class="content-scroll">
-      <!-- Seção: Languages -->
       <section class="service-section">
-        <!-- Section Header -->
         <div class="section-header">
           <div class="section-accent-bar"></div>
           <h2 class="section-label">Languages</h2>
@@ -174,9 +43,7 @@ const toggleLogsPanel = () => {
               class="service-card"
               :class="{ running: service.status === 'running' }"
             >
-              <!-- Info & Brand -->
               <div class="service-info">
-                <!-- Icon wrapper -->
                 <div
                   class="icon-wrapper"
                   :class="{ running: service.status === 'running' }"
@@ -211,7 +78,6 @@ const toggleLogsPanel = () => {
                 </div>
               </div>
 
-              <!-- Controls Actions -->
               <div class="service-controls">
                 <div class="port-group">
                   <label class="port-label">Port</label>
@@ -252,7 +118,6 @@ const toggleLogsPanel = () => {
                   </svg>
                 </button>
 
-                <!-- Start/Stop Button -->
                 <button @click="toggleService(service)" class="toggle-btn">
                   <div
                     class="toggle-btn-bg"
@@ -299,9 +164,7 @@ const toggleLogsPanel = () => {
         </div>
       </section>
 
-      <!-- Seção: Database -->
       <section class="service-section">
-        <!-- Section Header -->
         <div class="section-header">
           <div class="section-accent-bar"></div>
           <h2 class="section-label">Database</h2>
@@ -314,7 +177,6 @@ const toggleLogsPanel = () => {
               class="service-card"
               :class="{ running: service.status === 'running' }"
             >
-              <!-- Info & Brand -->
               <div class="service-info">
                 <div
                   class="icon-wrapper"
@@ -357,7 +219,6 @@ const toggleLogsPanel = () => {
                 </div>
               </div>
 
-              <!-- Controls Actions -->
               <div class="service-controls">
                 <div class="port-group">
                   <label class="port-label">Port</label>
@@ -398,7 +259,6 @@ const toggleLogsPanel = () => {
                   </svg>
                 </button>
 
-                <!-- Start/Stop Button -->
                 <button @click="toggleService(service)" class="toggle-btn">
                   <div
                     class="toggle-btn-bg"
@@ -446,9 +306,7 @@ const toggleLogsPanel = () => {
       </section>
     </div>
 
-    <!-- Collapsible Output Logs Panel -->
     <div class="logs-panel" :class="{ expanded: isLogsExpanded }">
-      <!-- Terminal Header -->
       <div class="logs-header" @click="toggleLogsPanel">
         <div class="logs-header-left">
           <svg
@@ -469,7 +327,6 @@ const toggleLogsPanel = () => {
         </div>
         <div class="logs-header-right">
           <button @click.stop="clearLogs" class="clear-btn">CLEAR</button>
-          <!-- Expand/Collapse arrow icon -->
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="chevron-icon"
@@ -488,7 +345,6 @@ const toggleLogsPanel = () => {
         </div>
       </div>
 
-      <!-- Terminal Lines -->
       <div
         v-show="isLogsExpanded"
         ref="terminalContainer"
