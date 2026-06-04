@@ -12,9 +12,16 @@
   "app": {
     "windows": [
       {
-        "title": "dbinit",
-        "width": 600,
-        "height": 600
+        "title": "DBInit",
+        "width": 500,
+        "height": 500,
+        "resizable": false,
+        "fullscreen": false,
+        "maximizable": false,
+        "transparent": true,
+        "decorations": false,
+        "shadow": true,
+        "center": true
       }
     ],
     "security": {

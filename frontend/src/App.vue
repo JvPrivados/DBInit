@@ -1,7 +1,19 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import Titlebar from "./components/Titlebar.vue";
+import AppContainer from "./components/AppContainer.vue";
+
+document.addEventListener(
+  "contextmenu",
+  (e) => {
+    e.preventDefault();
+  },
+  false,
+);
 </script>
 
 <template>
-  <HelloWorld />
+  <Titlebar />
+  <AppContainer />
 </template>
+
+<style lang="scss" scoped></style>
