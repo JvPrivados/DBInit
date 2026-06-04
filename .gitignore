@@ -1,0 +1,22 @@
+# BACKEND (Rust)
+backend/target/*
+backend/gen/schemas/*
+
+# FRONTEND (Vite / Deno)
+frontend/node_modules/
+.deno/*
+deno.lock
+
+
+# IDEs
+.vscode/*
+!.vscode/extensions.json
+.zed/*
+.vs/*
+.idea/*
+
+# Sistema
+.DS_Store
+Thumbs.db
+.vite/
+node_modules/
